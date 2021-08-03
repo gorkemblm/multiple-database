@@ -66,4 +66,14 @@ public class UserLocationManager implements UserLocationService {
 
         return new SuccessResult(Message.SUCCESSFULLY_ADDED);
     }
+
+    @Override
+    public Result delete(String identityNumber) {
+
+        UserLocation userLocation = this.userLocationRepository.getByIdentityNumber(identityNumber);
+
+        this.userLocationRepository.delete(userLocation);
+
+        return new SuccessResult(Message.SUCCESSFULLY_DELETED);
+    }
 }

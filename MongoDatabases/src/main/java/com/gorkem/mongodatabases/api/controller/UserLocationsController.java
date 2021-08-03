@@ -7,10 +7,11 @@ import com.gorkem.mongodatabases.core.results.DataResult;
 import com.gorkem.mongodatabases.core.results.ErrorDataResult;
 import com.gorkem.mongodatabases.core.results.Result;
 import com.gorkem.mongodatabases.core.results.SuccessDataResult;
-import com.gorkem.mongodatabases.models.dtos.UserLocationAddDto;
-import com.gorkem.mongodatabases.models.dtos.UserLocationGetDto;
-import com.gorkem.mongodatabases.models.dtos.UserRegisterDto;
+import com.gorkem.mongodatabases.models.UserLocation;
+import com.gorkem.mongodatabases.models.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -73,7 +74,9 @@ public class UserLocationsController {
     public ResponseEntity<DataResult<UserRegisterDto>> addUser(@RequestBody UserRegisterDto userRegisterDto) {
         String dbName = DatabaseManager.findTheDBWithLoadBalance(this.userLocationService.getAll().getData());
 
-        DataResult result = restTemplate.postForObject((CALL_REST_API + dbName + "/add"), userRegisterDto, DataResult.class);
+        DataResult result = restTemplate.postForObject((CALL_REST_API + dbName + "/add"),
+                userRegisterDto,
+                DataResult.class);
 
         if (result.isSuccess()) {
             UserLocationAddDto userLocationAddDto = new UserLocationAddDto(userRegisterDto.getIdentityNumber(), dbName);
@@ -81,6 +84,81 @@ public class UserLocationsController {
             this.userLocationService.add(userLocationAddDto);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/get-user/{identityNumber}")
+    @ResponseBody
+    public ResponseEntity<DataResult<UserGetDto>> getUser(@PathVariable("identityNumber") String identityNumber) {
+
+        DataResult<UserLocationGetDto> userLocation = this.userLocationService.get(identityNumber);
+
+        if (userLocation.isSuccess()) {
+
+            String dbName = userLocation.getData().getDatabaseAddress();
+
+            DataResult result = restTemplate.getForObject(CALL_REST_API + dbName + "/get/{identityNumber}",
+                    DataResult.class,
+                    identityNumber);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/get-users/{databaseName}")
+    @ResponseBody
+    public ResponseEntity<DataResult<List<UserGetDto>>> getUsers(@PathVariable("databaseName") String databaseName) {
+
+        DataResult result = restTemplate.getForObject(CALL_REST_API + databaseName + "/get-all",
+                DataResult.class,
+                databaseName);
+
+        if (result.isSuccess()) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/update-user/{identityNumber}")
+    @ResponseBody
+    public ResponseEntity<DataResult<UserGetDto>> updateUser(@RequestBody UserUpdateDto userUpdateDto, @PathVariable String identityNumber) {
+
+        DataResult<UserLocationGetDto> userLocation = this.userLocationService.get(identityNumber);
+
+        String dbName = userLocation.getData().getDatabaseAddress();
+
+        ResponseEntity<DataResult> result = restTemplate.exchange(CALL_REST_API + dbName + "/update/{identityNumber}",
+                HttpMethod.PUT, new HttpEntity<>(userUpdateDto),
+                DataResult.class,
+                identityNumber);
+
+        if (result.getBody().isSuccess()) {
+            return new ResponseEntity<>(result.getBody(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/delete-user/{identityNumber}")
+    @ResponseBody
+    public ResponseEntity<Result> deleteUser(@PathVariable("identityNumber") String identityNumber) {
+
+        DataResult<UserLocationGetDto> userLocation = this.userLocationService.get(identityNumber);
+
+        if (userLocation.isSuccess()) {
+            String dbName = userLocation.getData().getDatabaseAddress();
+
+            restTemplate.delete(CALL_REST_API + dbName + "/delete/{identityNumber}",
+                    identityNumber);
+
+            this.userLocationService.delete(identityNumber);
+
+            return new ResponseEntity<>(null, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

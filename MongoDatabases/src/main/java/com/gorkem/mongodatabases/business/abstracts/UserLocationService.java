@@ -14,4 +14,6 @@ public interface UserLocationService {
     DataResult<List<UserLocationGetDto>> getAll();
 
     Result add(UserLocationAddDto userLocationAddDto);
+
+    Result delete(String identityNumber);
 }
