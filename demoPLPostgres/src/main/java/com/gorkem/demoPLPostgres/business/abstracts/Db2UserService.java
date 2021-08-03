@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface Db2UserService {
 
-    DataResult<UserGetDto> get(int id);
+    DataResult<UserGetDto> get(String identityNumber);
 
     DataResult<List<UserGetDto>> getAll();
 
     DataResult<UserRegisterDto> add(UserRegisterDto userRegisterDto);
 
-    Result delete(int id);
+    Result delete(String identityNumber);
 
-    DataResult<UserGetDto> update(UserUpdateDto userUpdateDto, int id);
+    DataResult<UserGetDto> update(UserUpdateDto userUpdateDto, String identityNumber);
 }
