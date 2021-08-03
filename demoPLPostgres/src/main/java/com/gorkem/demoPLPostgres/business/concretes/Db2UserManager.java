@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class Db2UserManager implements Db2UserService {
@@ -27,11 +26,11 @@ public class Db2UserManager implements Db2UserService {
     }
 
     @Override
-    public DataResult<UserGetDto> get(int id) {
-        Optional<User> user = this.db2UserRepository.findById(id);
+    public DataResult<UserGetDto> get(String identityNumber) {
+        User user = this.db2UserRepository.getByIdentityNumber(identityNumber);
 
-        if (!user.isEmpty()) {
-            UserGetDto userGetDto = ConverterManager.userEntityConvertToDto(user.get());
+        if (user != null) {
+            UserGetDto userGetDto = ConverterManager.userEntityConvertToDto(user);
             return new SuccessDataResult<>(Message.SUCCESSFULLY_LİSTED, userGetDto);
         } else {
             return new ErrorDataResult<>(Message.LIST_FAILED);
@@ -40,6 +39,9 @@ public class Db2UserManager implements Db2UserService {
 
     @Override
     public DataResult<List<UserGetDto>> getAll() {
+
+        //Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
+
         List<User> userList = this.db2UserRepository.findAll();
 
         if (!userList.isEmpty()) {
@@ -68,12 +70,12 @@ public class Db2UserManager implements Db2UserService {
     }
 
     @Override
-    public Result delete(int id) {
-        boolean value = this.db2UserRepository.existsById(id);
+    public Result delete(String identityNumber) {
+        User value = this.db2UserRepository.getByIdentityNumber(identityNumber);
 
-        if (value) {
+        if (value != null) {
 
-            this.db2UserRepository.deleteById(id);
+            this.db2UserRepository.delete(value);
             return new SuccessResult(Message.SUCCESSFULLY_DELETED);
 
         } else {
@@ -82,9 +84,9 @@ public class Db2UserManager implements Db2UserService {
     }
 
     @Override
-    public DataResult<UserGetDto> update(UserUpdateDto userUpdateDto, int id) {
+    public DataResult<UserGetDto> update(UserUpdateDto userUpdateDto, String identityNumber) {
 
-        User user = this.db2UserRepository.getById(id);
+        User user = this.db2UserRepository.getByIdentityNumber(identityNumber);
 
         if (user != null) {
 
