@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Qualifier("Db1UserRepository")
 public interface Db1UserRepository extends JpaRepository<User, Integer> {
+
+    User getByIdentityNumber(String identityNumber);
 }

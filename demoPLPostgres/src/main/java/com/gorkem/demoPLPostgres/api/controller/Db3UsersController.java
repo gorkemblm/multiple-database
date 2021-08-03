@@ -24,9 +24,10 @@ public class Db3UsersController {
         this.db3UserService = db3UserService;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<DataResult<UserGetDto>> get(@RequestParam int id) {
-        var result = this.db3UserService.get(id);
+    @GetMapping("/get/{identityNumber}")
+    @ResponseBody
+    public ResponseEntity<DataResult<UserGetDto>> get(@PathVariable("identityNumber") String identityNumber) {
+        var result = this.db3UserService.get(identityNumber);
 
         if (result.isSuccess()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -57,9 +58,10 @@ public class Db3UsersController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Result> delete(@RequestParam int id) {
-        var result = this.db3UserService.delete(id);
+    @DeleteMapping("/delete/{identityNumber}")
+    @ResponseBody
+    public ResponseEntity<Result> delete(@PathVariable("identityNumber") String identityNumber) {
+        var result = this.db3UserService.delete(identityNumber);
 
         if (result.isSuccess()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
@@ -68,9 +70,10 @@ public class Db3UsersController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<DataResult<UserGetDto>> update(@RequestBody UserUpdateDto userUpdateDto, @RequestParam int id) {
-        var result = this.db3UserService.update(userUpdateDto, id);
+    @PutMapping("/update/{identityNumber}")
+    @ResponseBody
+    public ResponseEntity<DataResult<UserGetDto>> update(@RequestBody UserUpdateDto userUpdateDto, @PathVariable("identityNumber") String identityNumber) {
+        var result = this.db3UserService.update(userUpdateDto, identityNumber);
 
         if (result.isSuccess()) {
             return new ResponseEntity<>(result, HttpStatus.OK);
