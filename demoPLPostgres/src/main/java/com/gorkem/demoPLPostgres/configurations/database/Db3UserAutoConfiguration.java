@@ -1,4 +1,4 @@
-package com.gorkem.demoPLPostgres.configurations;
+package com.gorkem.demoPLPostgres.configurations.database;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
