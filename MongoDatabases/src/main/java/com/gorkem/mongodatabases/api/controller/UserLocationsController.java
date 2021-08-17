@@ -2,12 +2,8 @@ package com.gorkem.mongodatabases.api.controller;
 
 import com.gorkem.mongodatabases.DatabaseManager;
 import com.gorkem.mongodatabases.business.abstracts.UserLocationService;
-import com.gorkem.mongodatabases.core.constants.Message;
 import com.gorkem.mongodatabases.core.results.DataResult;
-import com.gorkem.mongodatabases.core.results.ErrorDataResult;
 import com.gorkem.mongodatabases.core.results.Result;
-import com.gorkem.mongodatabases.core.results.SuccessDataResult;
-import com.gorkem.mongodatabases.models.UserLocation;
 import com.gorkem.mongodatabases.models.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -19,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/user-locations")
 public class UserLocationsController {
